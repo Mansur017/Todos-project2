@@ -1,44 +1,51 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 
-const initialState = [
-  {
-    text: "React",
-    done: false
-  },
-  {
-    text: "HTML",
-    done: false
-  },
-  {
-    text: "CSS",
-    done: false
-  }, 
-];
+const initialState = {
+  todos: [],
+  loading: false,
+};
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case "DELETE":
-      return state.filter((item, index) => {
-        if (action.payload === index) {
-          return false;
-        }
-        return true;
+      const updatedTodosAfterDelete = state.todos.filter((item, index) => {
+        return action.payload !== index;
       });
+      return {
+        ...state,
+        todos: updatedTodosAfterDelete,
+      };
 
     case "ADD":
-      return state.map((item, index) => {
+      const updatedTodos = state.todos.map((item, index) => {
         if (action.payload === index) {
-          return { ...item, done: !item.done };
+          return { ...item, completed: !item.completed };
         }
         return item;
       });
-
+      return {
+        ...state,
+        todos: updatedTodos,
+      };
+    case "load":
+      return action.payload
+    case "todos/start":
+      return {
+        ...state,
+        loading: true
+      }
+    case "todos/items":
+      return {
+        ...state,
+        todos: action.payload,
+        loading: false
+      }
     default:
       return state;
   }
 };
 
-
-const store = createStore(reducer);
+const store = createStore(reducer, applyMiddleware(thunk));
 
 export default store;
