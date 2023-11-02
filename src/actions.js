@@ -7,7 +7,7 @@ export const loadTodos = () => {
             .then((json) => {
                 dispatch({ 
                     type: "todos/items", 
-                    payload: json 
+                    payload: json
                 });
             })
     };
